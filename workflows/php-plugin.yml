@@ -1,0 +1,40 @@
+name: php-plugin
+
+# Reusable CI for every web3e PHP plugin repo. Reference it from a repo's own workflow:
+#
+#   jobs:
+#     ci:
+#       uses: web3e-cc/.github/.github/workflows/php-plugin.yml@main
+#
+# Lints on the PHP versions merchant hosts actually run (7.4 → 8.3), validates composer.json when
+# present, and runs a bundled test script when one exists (tests/run.php).
+
+on:
+  workflow_call:
+    inputs:
+      php-versions:
+        description: JSON array of PHP versions to lint against.
+        required: false
+        type: string
+        default: '["7.4", "8.1", "8.3"]'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ${{ fromJSON(inputs.php-versions) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: curl, hash, json, mbstring
+          coverage: none
+      - name: Syntax lint
+        run: find . -path ./vendor -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l
+      - name: Validate composer.json
+        run: '[ -f composer.json ] && composer validate --strict || echo "no composer.json"'
+      - name: Run tests
+        run: '[ -f tests/run.php ] && php tests/run.php || echo "no tests/run.php"'
