@@ -1,4 +1,8 @@
-# Web3e
+<p align="center">
+  <img src="https://raw.githubusercontent.com/web3e-cc/.github/main/profile/logo.png" width="112" alt="Web3e" />
+</p>
+
+<h1 align="center">Web3e</h1>
 
 Open-source integrations for the **Web3e** crypto payment gateway — accept USDT and other crypto in
 popular website engines with minimal effort.
